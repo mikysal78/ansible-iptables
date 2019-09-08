@@ -1,0 +1,137 @@
+---
+# tasks file for ansible-iptables
+# apt
+- name: Update APT package cache
+  apt: update_cache=yes
+  tags: apt
+- name: Install packages and dependencies
+  apt: >
+    name={{ packages }} state=latest
+  tags: apt
+
+# iptables reset
+- name: file iptables reset
+  copy:
+    src: ../files/reset
+    dest: /tmp/reset-iptables
+- name: iptables reset
+  shell: /usr/sbin/iptables-restore < /tmp/reset-iptables
+- name: Flush existing firewall rules
+  iptables:
+    flush: true
+# iptables base
+- name: Firewall rule - allow all loopback traffic
+  iptables:
+    action: append
+    chain: INPUT
+    in_interface: lo
+    jump: ACCEPT
+  notify:
+    - persist iptables
+- name: Firewall rule - allow established connections
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port ping traffic
+  iptables:
+    chain: INPUT
+    jump: ACCEPT
+    protocol: icmp
+  notify:
+    - persist iptables
+# iptables open ports
+- name: Firewall rule - allow port "{{ ssh_port }}"/SSH traffic
+  iptables:
+    chain: INPUT
+    destination_port: "{{ ssh_port }}"
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 53/DNS TCP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 53
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 53/DNS UDP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 53
+    jump: ACCEPT
+    protocol: udp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 953/DNS rndc TCP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 953
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 953/DNS rndc UDP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 953
+    jump: ACCEPT
+    protocol: udp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 269/OLDRd2 traffic
+  iptables:
+    chain: INPUT
+    destination_port: 269
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 9418/GIT traffic
+  iptables:
+    chain: INPUT
+    destination_port: 9418
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 1194/OpenVPN traffic
+  iptables:
+    chain: INPUT
+    destination_port: 1194
+    jump: ACCEPT
+    protocol: udp
+  notify:
+    - persist iptables
+
+- name: Forward DROP Public Interface
+  iptables:
+    chain: FORWARD
+    out_interface: "{{ ansible_default_ipv4.interface }}"
+    jump: DROP
+  notify:
+    - persist iptables
+
+# Set Policy defaults
+- name: Set the policy for the INPUT chain to DROP
+  iptables:
+    chain: INPUT
+    policy: DROP
+  notify:
+    - persist iptables
+- name: Set the policy for the OUTPUT chain to ACCEPT
+  iptables:
+    chain: OUTPUT
+    policy: ACCEPT
+  notify:
+    - persist iptables
+- name: Set the policy for the FORWARD chain to ACCEPT
+  iptables:
+    chain: FORWARD
+    policy: ACCEPT
+  notify:
+    - persist iptables

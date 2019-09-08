@@ -1,0 +1,5 @@
+---
+# vars file for ansible-iptables
+packages:
+  - netfilter-persistent
+  - iptables-persistent
