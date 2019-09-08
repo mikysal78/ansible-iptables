@@ -10,7 +10,7 @@ Un semplice ruolo che apre le porte per SSH, OpenVPN, OLSRd2 e Bind Server. La m
 Role Variables
 --------------
 
-Puoi modificare le porta SSH di default nel file defaults/main.yml o impostarla nel playbook come nell'esempio. Le regole sono definite in task/main.yml ed è semplicissimo inserne nuove o modificare quelle esistenti.
+Puoi modificare le porta SSH di default nel file defaults/main.yml o impostarla nel playbook come nell'esempio. Le regole sono definite in task/main.yml ed è semplicissimo aggiungerne nuove o modificare quelle esistenti.
 
 
 Example Playbook
