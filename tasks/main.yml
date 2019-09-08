@@ -15,7 +15,7 @@
     src: ../files/reset
     dest: /tmp/reset-iptables
 - name: iptables reset
-  shell: /usr/sbin/iptables-restore < /tmp/reset-iptables
+  shell: iptables-restore < /tmp/reset-iptables
 - name: Flush existing firewall rules
   iptables:
     flush: true
