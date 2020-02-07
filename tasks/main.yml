@@ -83,6 +83,22 @@
     protocol: udp
   notify:
     - persist iptables
+- name: Firewall rule - allow port 8053/DNS statistic TCP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 8053
+    jump: ACCEPT
+    protocol: tcp
+  notify:
+    - persist iptables
+- name: Firewall rule - allow port 8053/DNS statistic UDP traffic
+  iptables:
+    chain: INPUT
+    destination_port: 8053
+    jump: ACCEPT
+    protocol: udp
+  notify:
+    - persist iptables
 - name: Firewall rule - allow port 269/OLDRd2 traffic
   iptables:
     chain: INPUT
